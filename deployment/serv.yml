@@ -1,0 +1,81 @@
+---
+
+- name: Upgrade all
+  hosts: all
+  tasks:
+
+    - name: Run the equivalent of "apt-get update" as a separate step
+      apt:
+        update_cache: yes
+
+    - name: Upgrade the OS (apt-get dist-upgrade)
+      apt:
+        upgrade: full
+
+    - name: Remove dependencies that are no longer required
+      apt:
+        autoremove: yes
+
+- name: Set up serv hosts
+  hosts: serv
+  tasks:
+
+    - name: Install tomcat9
+      package:
+        name: tomcat9
+        state: present
+
+    - name: Set staff sudoers rules
+      copy:
+        src: staff-sudoers
+        mode: "600"
+        dest: /etc/sudoers.d/staff
+
+- name: Set up data hosts
+  hosts: data
+  tasks:
+
+    - name: Install Java
+      package:
+        name: default-jdk
+        state: present
+
+    - name: Set up neo4j/ directory
+      file:
+        path: "/srv/neo4j"
+        state: directory
+
+    - name: Deploy neo4j
+      unarchive:
+        src: "neo4j-community-{{ neo4j_version }}-unix-with-apoc.tar.gz"
+        dest: "/srv/neo4j"
+
+    - name: Link to deployed neo4j version
+      file:
+        src: "neo4j-community-{{ neo4j_version }}"
+        dest: "/srv/neo4j/neo4j"
+        state: link
+
+    - name: Change neo4j configuration values
+      blockinfile:
+        path: "/srv/neo4j/neo4j/conf/neo4j.conf"
+        block: "{{ lookup('file', 'neo4j.conf.extra') }}"
+
+    - name: Set up neo4j/ directory default ACL
+      acl:
+        path: "/srv/neo4j"
+        entity: staff
+        etype: group
+        default: yes
+        permissions: rwX
+        recursive: yes
+        state: present
+
+    - name: Set up neo4j directory ACL
+      acl:
+        path: "/srv/neo4j"
+        entity: staff
+        etype: group
+        permissions: rwX
+        recursive: yes
+        state: present
