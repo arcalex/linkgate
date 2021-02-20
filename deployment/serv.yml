@@ -33,6 +33,12 @@
 
 - name: Set up data hosts
   hosts: data
+  vars:
+    wdirs:
+      - /srv/neo4j/neo4j/certificates
+      - /srv/neo4j/neo4j/data
+      - /srv/neo4j/neo4j/run
+      - /srv/neo4j/neo4j/logs
   tasks:
 
     - name: Install Java
@@ -61,21 +67,24 @@
         path: "/srv/neo4j/neo4j/conf/neo4j.conf"
         block: "{{ lookup('file', 'neo4j.conf.extra') }}"
 
-    - name: Set up neo4j/ directory default ACL
+    - name: Set up staff-writable/ directory default ACL
       acl:
-        path: "/srv/neo4j"
+        path: "{{ item }}"
         entity: staff
         etype: group
         default: yes
         permissions: rwX
         recursive: yes
         state: present
+      with_items: "{{ wdirs }}"
 
-    - name: Set up neo4j directory ACL
+    - name: Set up staff-writable directory ACL
       acl:
-        path: "/srv/neo4j"
+        path: "{{ item }}"
         entity: staff
         etype: group
         permissions: rwX
         recursive: yes
         state: present
+      with_items: "{{ wdirs }}"
+
