@@ -1,0 +1,73 @@
+---
+- name: Upgrade all
+  hosts: all
+  become: true
+  tasks:
+
+    - name: Run the equivalent of "apt-get update" as a separate step
+      apt:
+        update_cache: yes
+
+    - name: Upgrade the OS (apt-get dist-upgrade)
+      apt:
+        upgrade: full
+
+    - name: Remove dependencies that are no longer required
+      apt:
+        autoremove: yes
+
+# Playbook from:
+# https://dev.to/dhingrachief/install-and-run-mongodb-using-ansible-77c
+
+# Install MongoDB on Debian:
+# https://docs.mongodb.com/manual/tutorial/install-mongodb-on-debian/
+
+- name: Install mongodb
+  hosts: serv, data
+  become: true
+
+  tasks:
+    - name: Import public key
+      apt_key:
+        url: 'https://www.mongodb.org/static/pgp/server-5.0.asc'
+        state: present
+
+    - name: Add repository
+      apt_repository:
+        filename: '/etc/apt/sources.list.d/mongodb-org'
+        repo: 'deb http://repo.mongodb.org/apt/debian buster/mongodb-org/5.0 main'
+        state: present
+        update_cache: yes
+
+    - name: Install mongoDB
+      apt:
+        name: mongodb-org
+        state: present
+
+    - name: Enable service
+      service:
+        name: mongod
+        enabled: yes
+        state: started
+
+- name: Install nodejs
+  hosts: serv
+  become: true
+
+  tasks:
+    - name: Import public key
+      apt_key:
+        url: 'https://deb.nodesource.com/gpgkey/nodesource.gpg.key'
+        state: present
+
+    - name: Add repository
+      apt_repository:
+        filename: '/etc/apt/sources.list.d/node'
+        repo: 'deb http://deb.nodesource.com/node_16.x buster main'
+        state: present
+        update_cache: yes
+
+    - name: Install nodejs
+      apt:
+        name: nodejs
+        state: present

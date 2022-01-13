@@ -1,0 +1,1 @@
+/srv/arangodb/arangodb3-3.7.2-1/usr/bin/arangosh —server.endpoint link-data7:8531 —server.database link-data —server.authentication false

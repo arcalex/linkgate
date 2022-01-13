@@ -2,6 +2,7 @@
 
 - name: Upgrade all
   hosts: all
+  become: true
   tasks:
 
     - name: Run the equivalent of "apt-get update" as a separate step
@@ -18,6 +19,7 @@
 
 - name: Set up serv hosts
   hosts: serv
+  become: true
   tasks:
 
     - name: Install tomcat9
@@ -25,20 +27,30 @@
         name: tomcat9
         state: present
 
+    - name: Copy files (tomcat9)
+      copy:
+        src: "{{ item }}"
+        dest: "/etc/tomcat9/{{ item }}"
+      with_items:
+        - server.xml
+        - certs/bibalex.key
+        - certs/bibalex.pem
+
     - name: Set staff sudoers rules
       copy:
-        src: staff-sudoers
-        mode: "600"
-        dest: /etc/sudoers.d/staff
+        src: sudoers.serv
+        mode: "440"
+        dest: /etc/sudoers.d/serv
 
 - name: Set up data hosts
   hosts: data
+  become: true
   vars:
+    arangodb3_version: "{{ lookup('file', 'arangodb3.version') }}"
+    neo4j_version: "{{ lookup('file', 'neo4j.version') }}"
     wdirs:
-      - /srv/neo4j/neo4j/certificates
-      - /srv/neo4j/neo4j/data
-      - /srv/neo4j/neo4j/run
-      - /srv/neo4j/neo4j/logs
+      - /srv/link-data/neo4j  # certificates/, data/, logs/, run/
+      - /srv/link-data/arangodb3
   tasks:
 
     - name: Install Java
@@ -46,28 +58,58 @@
         name: default-jdk
         state: present
 
-    - name: Set up neo4j/ directory
+    - name: Make directory (/srv/link-data)
       file:
-        path: "/srv/neo4j"
+        path: "/srv/link-data"
         state: directory
+
+    - name: Deploy arangodb3
+      unarchive:
+        src: "arangodb3-linux-{{ arangodb3_version }}.tar.gz"
+        dest: "/srv/link-data"
+        owner: root
+        group: root
+
+    - name: Link to deployed version (arangodb3)
+      file:
+        src: "arangodb3-linux-{{ arangodb3_version }}"
+        dest: "/srv/link-data/arangodb3"
+        state: link
+
+    - name: Copy files (systemd)
+      copy:
+        src: "{{ item }}"
+        dest: "/etc/systemd/system/{{ item }}"
+      with_items:
+        - arangod.service
+        - arangod-agent.service
+        - arangod-coordinator@.service
 
     - name: Deploy neo4j
       unarchive:
-        src: "neo4j-community-{{ neo4j_version }}-unix-with-apoc.tar.gz"
-        dest: "/srv/neo4j"
+        src: "neo4j-community-{{ neo4j_version }}-unix.tar.gz"  # or ...-with-apoc.tar.gz
+        dest: "/srv/link-data"
+        owner: root
+        group: root
 
-    - name: Link to deployed neo4j version
+    - name: Link to deployed version (neo4j)
       file:
         src: "neo4j-community-{{ neo4j_version }}"
-        dest: "/srv/neo4j/neo4j"
+        dest: "/srv/link-data/neo4j"
         state: link
 
-    - name: Change neo4j configuration values
+    - name: Change configuration values (neo4j)
       blockinfile:
-        path: "/srv/neo4j/neo4j/conf/neo4j.conf"
+        path: "/srv/link-data/neo4j/conf/neo4j.conf"
         block: "{{ lookup('file', 'neo4j.conf.extra') }}"
 
-    - name: Set up staff-writable/ directory default ACL
+    - name: Set staff sudoers rules
+      copy:
+        src: sudoers.data
+        mode: "440"
+        dest: /etc/sudoers.d/data
+
+    - name: Set up staff-writable directory default ACL
       acl:
         path: "{{ item }}"
         entity: staff

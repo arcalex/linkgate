@@ -1,0 +1,6 @@
+https://linkapi.bibalex.org/?operation=getGraph&identifier=gov,cdc,www,//https:/&timestamp=20200309191813
+https://linkapi.bibalex.org/?operation=getLatestVersion&identifier=gov,cdc,www,//https:/
+https://linkapi.bibalex.org/?operation=getVersions&identifier=gov,cdc,www,//https:/&dateTime=20200309
+https://linkapi.bibalex.org/?operation=getVersionCountsYearly&identifier=gov,cdc,www,//https:/
+https://linkapi.bibalex.org/?operation=getVersionCountsMonthly&identifier=gov,cdc,www,//https:/&year=2020
+https://linkapi.bibalex.org/?operation=getVersionCountsDaily&identifier=gov,cdc,www,//https:/&year=2020&month=3

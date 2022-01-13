@@ -1,0 +1,1 @@
+%staff ALL= NOPASSWD: /bin/systemctl restart arangod*, /bin/systemctl stop arangod*, /bin/systemctl start arangod*

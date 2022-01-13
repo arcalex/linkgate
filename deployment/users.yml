@@ -1,0 +1,28 @@
+---
+
+- name: Add users (serv + data + viz)
+  hosts: serv, data, viz
+  become: true
+  vars:
+    staff:
+      - { name: amm, uid: 1001 }
+      - { name: nse, uid: 1002 }
+      - { name: mgn, uid: 1003 }
+      - { name: msm, uid: 1004 }
+      - { name: amr, uid: 1005 }
+  tasks:
+
+    - name: Add users
+      user:
+        name: "{{ item.name }}"
+        create_home: yes
+        uid: "{{ item.uid }}"
+        groups: staff, adm
+      with_items: "{{ staff }}"
+
+    - name: Set public keys
+      authorized_key:
+        user: "{{ item.name }}"
+        state: present
+        key: "{{ lookup('file', 'pubkeys/{{ item.name }}.pub') }}"
+      with_items: "{{ staff }}"

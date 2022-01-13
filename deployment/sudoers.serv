@@ -1,0 +1,2 @@
+%staff ALL= NOPASSWD: /bin/systemctl restart tomcat9, /bin/systemctl stop tomcat9, /bin/systemctl start tomcat9
+%staff ALL=(tomcat) NOPASSWD: ALL

@@ -1,0 +1,9 @@
+
+dbms.security.auth_enabled=false
+
+dbms.memory.heap.initial_size=14g
+dbms.memory.heap.max_size=14g
+
+dbms.default_listen_address=0.0.0.0
+
+dbms.threads.worker_count=2

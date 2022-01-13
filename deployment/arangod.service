@@ -1,0 +1,13 @@
+[Unit]
+Description=arangod
+
+StartLimitIntervalSec=300
+StartLimitBurst=5
+
+[Service]
+Restart=on-failure
+RestartSec=3
+
+WorkingDirectory=/srv/link-data/arangodb3
+ExecStart=/srv/link-data//arangodb3/usr/sbin/arangod -c etc/arangodb3/arangod.conf
+Type=simple

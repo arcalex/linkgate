@@ -1,0 +1,11 @@
+----
+
+- name: Modify tomcat9 listen port
+  hosts: serv
+  tasks:
+
+    - name: Listen on port 80
+      replace:
+        path: /etc/tomcat9/server.xml
+        regexp: '(<Connector port)="8080"'
+        replace: '\1="80"'

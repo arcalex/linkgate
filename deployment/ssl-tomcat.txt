@@ -1,0 +1,17 @@
+Information on SSL configuration in Tomcat using a KeyStore:
+
+https://tomcat.apache.org/tomcat-9.0-doc/ssl-howto.html
+https://www.mulesoft.com/tcat/tomcat-ssl
+https://confluence.atlassian.com/kb/how-to-import-an-existing-ssl-certificate-for-use-in-tomcat-838412853.html
+
+Information on the Java KeyStore format:
+
+https://docs.oracle.com/cd/E19509-01/820-3503/ggfen/index.html
+
+Can also be done using a certificateFile and certificateKeyFile:
+
+https://www.atechtown.com/install-lets-encrypt-ssl-with-tomcat/
+
+SSL_ERROR_RX_RECORD_TOO_LONG may mean an OS package upgrade is needed:
+
+https://www.thesslstore.com/blog/ssl_error_rx_record_too_long/

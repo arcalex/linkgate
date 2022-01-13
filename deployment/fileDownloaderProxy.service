@@ -1,0 +1,13 @@
+[Unit]
+Description=fileDownloaderProxy
+
+StartLimitIntervalSec=300
+StartLimitBurst=3
+
+[Service]
+Restrt=on-failure
+RestartSec=3
+
+WorkingDirectory=/opt/link-viz/proxy
+ExecStart=/usr/bin/node fileDownloaderProxy.mjs
+Type=simple

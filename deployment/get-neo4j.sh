@@ -1,8 +1,12 @@
 #!/bin/sh
 set -e
 
-if [ $# -ne 2 ]; then
-  echo "Usage: $0 <neo4j_version> <apoc_version>" >&2
+# Download page: https://neo4j.com/download-center/#community
+
+# APOC: https://github.com/neo4j-contrib/neo4j-apoc-procedures/releases/
+
+if [ $# -ne 2 ] && [ $# -ne 1 ]; then
+  echo "Usage: $0 <neo4j_version> [<apoc_version>]" >&2
   exit 1
 fi
 
@@ -12,6 +16,10 @@ echo "Downloading Neo4j..." >&2
 
 # Without -O, filename has  "artifact.php?..."
 wget "https://neo4j.com/artifact.php?name=neo4j-community-$1-unix.tar.gz" -O "$bn-unix.tar.gz"
+
+if [ $# -ne 2 ]; then
+  exit  # Do not bundle APOC
+fi
 
 if [ -e "$bn" ]; then
   echo "'$bn' already exists!" >&2

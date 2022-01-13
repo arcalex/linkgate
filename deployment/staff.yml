@@ -1,0 +1,5 @@
+- { name: amm, uid: 1001 }
+- { name: nse, uid: 1002 }
+- { name: mgn, uid: 1003 }
+- { name: msm, uid: 1004 }
+- { name: amr, uid: 1005 }
